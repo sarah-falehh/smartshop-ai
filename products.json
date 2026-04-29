@@ -1,0 +1,50 @@
+[
+  {
+    "id": "prod_001",
+    "name": "Wireless Noise-Cancelling Headphones",
+    "image_path": "static/images/prod_001.jpg",
+    "price": 129.99,
+    "category": null,
+    "alt_text": null,
+    "sentiment_score": null,
+    "sentiment_label": null,
+    "image_ok": null,
+    "reviews": [
+      "Amazing sound quality, totally worth it!",
+      "Battery life is incredible, love these.",
+      "A bit tight on my ears but sound is great."
+    ]
+  },
+  {
+    "id": "prod_002",
+    "name": "Ergonomic Office Chair",
+    "image_path": "static/images/prod_002.jpg",
+    "price": 249.00,
+    "category": null,
+    "alt_text": null,
+    "sentiment_score": null,
+    "sentiment_label": null,
+    "image_ok": null,
+    "reviews": [
+      "My back pain disappeared after a week.",
+      "Assembly was a nightmare, instructions are terrible.",
+      "Comfortable but the armrests feel cheap."
+    ]
+  },
+  {
+    "id": "prod_003",
+    "name": "Slim Fit Denim Jacket",
+    "image_path": "static/images/prod_003.jpg",
+    "price": 59.99,
+    "category": null,
+    "alt_text": null,
+    "sentiment_score": null,
+    "sentiment_label": null,
+    "image_ok": null,
+    "reviews": [
+      "Great quality for the price!",
+      "Runs small, order a size up.",
+      "Love the fit and the colour."
+    ]
+  }
+]

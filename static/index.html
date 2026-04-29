@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartShop AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f1117 100%);
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    header h1 { font-size: 1.4rem; font-weight: 700; color: #f8fafc; }
+    header span { font-size: 0.8rem; color: #64748b; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      height: calc(100vh - 61px);
+    }
+
+    /* ── Sidebar ── */
+    aside {
+      background: #0f1117;
+      border-right: 1px solid #1e293b;
+      padding: 1.5rem 1rem;
+      overflow-y: auto;
+    }
+    aside h2 { font-size: 0.7rem; letter-spacing: 0.1em; color: #475569; text-transform: uppercase; margin-bottom: 0.75rem; padding-left: 0.5rem; }
+
+    .product-card {
+      border-radius: 10px;
+      background: #1e293b;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .product-card:hover { border-color: #3b82f6; }
+    .product-card.active { border-color: #3b82f6; background: #1d3a5e; }
+    .product-card h3 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .product-card .price { font-size: 0.75rem; color: #94a3b8; }
+
+    /* ── Main ── */
+    main {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+
+    .module {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      border: 1px solid #2d3f56;
+    }
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .module-header .icon { font-size: 1.2rem; }
+    .module-header h3 { font-size: 0.95rem; font-weight: 600; }
+    .module-header .badge {
+      margin-left: auto;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 99px;
+      background: #0f172a;
+      color: #64748b;
+      border: 1px solid #334155;
+    }
+    .module-header .badge.live { background: #052e16; color: #4ade80; border-color: #166534; }
+
+    .btn {
+      display: inline-block;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #2563eb; }
+    .btn:disabled { background: #1e3a5f; color: #475569; cursor: not-allowed; }
+
+    .result {
+      margin-top: 0.75rem;
+      background: #0f1117;
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      min-height: 2.5rem;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .sentiment-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: #0f1117;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+    .sentiment-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #ef4444, #eab308, #22c55e);
+      transition: width 0.4s ease;
+    }
+
+    /* ── Chatbot ── */
+    .chat-area {
+      background: #0f1117;
+      border-radius: 8px;
+      padding: 0.75rem;
+      height: 160px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .chat-msg { margin-bottom: 0.5rem; }
+    .chat-msg.user { color: #93c5fd; }
+    .chat-msg.bot  { color: #86efac; }
+
+    .chat-input-row { display: flex; gap: 0.5rem; }
+    .chat-input-row input {
+      flex: 1;
+      background: #0f1117;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      color: #e2e8f0;
+      font-size: 0.82rem;
+      outline: none;
+    }
+    .chat-input-row button { width: auto; padding: 0.4rem 0.9rem; }
+
+    .label-positive { color: #4ade80; font-weight: 700; }
+    .label-negative { color: #f87171; font-weight: 700; }
+    .label-neutral  { color: #facc15; font-weight: 700; }
+
+    #no-product { color: #475569; font-size: 0.9rem; text-align: center; margin-top: 4rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="font-size:1.5rem">🛍️</div>
+  <h1>SmartShop AI</h1>
+  <span>E-Commerce Intelligent & Inclusif</span>
+</header>
+
+<div class="layout">
+  <aside>
+    <h2>Catalogue</h2>
+    <div id="product-list"></div>
+  </aside>
+
+  <main>
+    <div id="no-product">← Select a product to test the AI modules</div>
+    <div id="modules-grid" class="modules" style="display:none"></div>
+  </main>
+</div>
+
+<script>
+  const API = "http://localhost:5000/api";
+  let selectedProduct = null;
+  let products = [];
+  let chatHistory = [];
+
+  // ── Load products ──────────────────────────────────────────────────────
+  async function loadProducts() {
+    try {
+      const res = await fetch(`${API}/health`);
+      if (!res.ok) throw new Error("API not reachable");
+    } catch {
+      document.getElementById("no-product").textContent =
+        "⚠️  Cannot reach Flask API. Run: python main.py";
+      return;
+    }
+
+    // For demo: hardcode sample products (in production, expose GET /api/products)
+    products = [
+      { id: "prod_001", name: "Wireless Headphones",   price: "129.99€", reviews: ["Amazing sound quality!", "Battery life is incredible.", "A bit tight but great sound."] },
+      { id: "prod_002", name: "Ergonomic Office Chair", price: "249.00€", reviews: ["My back pain disappeared.", "Assembly was a nightmare.", "Comfortable but armrests feel cheap."] },
+      { id: "prod_003", name: "Slim Fit Denim Jacket",  price:  "59.99€", reviews: ["Great quality for the price!", "Runs small, order a size up.", "Love the fit and colour."] },
+    ];
+
+    const list = document.getElementById("product-list");
+    products.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `<h3>${p.name}</h3><div class="price">${p.price}</div>`;
+      card.addEventListener("click", () => selectProduct(p, card));
+      list.appendChild(card);
+    });
+  }
+
+  function selectProduct(product, card) {
+    document.querySelectorAll(".product-card").forEach(c => c.classList.remove("active"));
+    card.classList.add("active");
+    selectedProduct = product;
+    chatHistory = [];
+    renderModules();
+  }
+
+  // ── Render module cards ────────────────────────────────────────────────
+  function renderModules() {
+    document.getElementById("no-product").style.display = "none";
+    const grid = document.getElementById("modules-grid");
+    grid.style.display = "grid";
+    grid.innerHTML = `
+      ${moduleCard("alt_text",    "🖼️",  "Alt-text Generator",    "STUB",  altTextCard())}
+      ${moduleCard("sentiment",   "⭐",  "Sentiment Analysis",    "LIVE",  sentimentCard())}
+      ${moduleCard("recommendations","🔍","Visual Recommendations","STUB",  recommendationsCard())}
+      ${moduleCard("categorize",  "🏷️",  "Product Categorization","STUB",  categorizeCard())}
+      ${moduleCard("defect",      "🚨",  "Image Quality Check",   "STUB",  defectCard())}
+    `;
+    // Chatbot is wider — append separately
+    const chatDiv = document.createElement("div");
+    chatDiv.className = "module";
+    chatDiv.style.gridColumn = "1 / -1";
+    chatDiv.innerHTML = chatbotCard();
+    grid.appendChild(chatDiv);
+
+    bindEvents();
+  }
+
+  function moduleCard(id, icon, title, badge, inner) {
+    const badgeClass = badge === "LIVE" ? "badge live" : "badge";
+    return `
+      <div class="module" id="mod-${id}">
+        <div class="module-header">
+          <span class="icon">${icon}</span>
+          <h3>${title}</h3>
+          <span class="${badgeClass}">${badge}</span>
+        </div>
+        ${inner}
+      </div>`;
+  }
+
+  // ── Module HTML fragments ──────────────────────────────────────────────
+
+  function altTextCard() {
+    return `
+      <button class="btn" onclick="callAltText()">Generate Alt-text</button>
+      <div class="result" id="res-alt_text">—</div>`;
+  }
+
+  function sentimentCard() {
+    return `
+      <button class="btn" onclick="callSentiment()">Analyze Reviews</button>
+      <div class="sentiment-bar"><div class="sentiment-bar-fill" id="sentiment-bar" style="width:0%"></div></div>
+      <div class="result" id="res-sentiment">—</div>`;
+  }
+
+  function recommendationsCard() {
+    return `
+      <button class="btn" onclick="callRecommendations()">Find Similar Products</button>
+      <div class="result" id="res-recommendations">—</div>`;
+  }
+
+  function categorizeCard() {
+    return `
+      <button class="btn" onclick="callCategorize()">Detect Category</button>
+      <div class="result" id="res-categorize">—</div>`;
+  }
+
+  function defectCard() {
+    return `
+      <button class="btn" onclick="callDefect()">Check Image Quality</button>
+      <div class="result" id="res-defect">—</div>`;
+  }
+
+  function chatbotCard() {
+    return `
+      <div class="module-header">
+        <span class="icon">💬</span>
+        <h3>Shopping Assistant Chatbot</h3>
+        <span class="badge">STUB</span>
+      </div>
+      <div class="chat-area" id="chat-area"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Ask about products..." onkeydown="if(event.key==='Enter') sendChat()" />
+        <button class="btn" onclick="sendChat()">Send</button>
+      </div>`;
+  }
+
+  // ── API calls ──────────────────────────────────────────────────────────
+
+  async function callAltText() {
+    const el = document.getElementById("res-alt_text");
+    el.textContent = "Loading...";
+    try {
+      const res = await fetch(`${API}/alt-text`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image_path: `static/images/${selectedProduct.id}.jpg` }),
+      });
+      const data = await res.json();
+      el.textContent = data.alt_text ?? JSON.stringify(data);
+    } catch (e) { el.textContent = "Error: " + e.message; }
+  }
+
+  async function callSentiment() {
+    const el  = document.getElementById("res-sentiment");
+    const bar = document.getElementById("sentiment-bar");
+    el.textContent = "Loading...";
+    try {
+      const res = await fetch(`${API}/sentiment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews: selectedProduct.reviews }),
+      });
+      const data = await res.json();
+      const pct  = Math.round(data.score * 100);
+      bar.style.width = pct + "%";
+      const labelClass = `label-${data.label}`;
+      el.innerHTML = `Score: <span class="${labelClass}">${pct}% — ${data.label.toUpperCase()}</span>\n\n` +
+        data.breakdown.map(b => `• "${b.review}"\n  → ${b.label} (${Math.round(b.score*100)}%)`).join("\n\n");
+    } catch (e) { el.textContent = "Error: " + e.message; }
+  }
+
+  async function callRecommendations() {
+    const el = document.getElementById("res-recommendations");
+    el.textContent = "Loading...";
+    try {
+      const res = await fetch(`${API}/similar/${selectedProduct.id}`);
+      const data = await res.json();
+      el.textContent = data.similar.map(s => `• ${s.name} — similarity: ${s.score}`).join("\n");
+    } catch (e) { el.textContent = "Error: " + e.message; }
+  }
+
+  async function callCategorize() {
+    const el = document.getElementById("res-categorize");
+    el.textContent = "Loading...";
+    try {
+      const res = await fetch(`${API}/categorize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image_path: `static/images/${selectedProduct.id}.jpg` }),
+      });
+      const data = await res.json();
+      el.textContent = `Category: ${data.category}\nConfidence: ${Math.round(data.confidence * 100)}%`;
+    } catch (e) { el.textContent = "Error: " + e.message; }
+  }
+
+  async function callDefect() {
+    const el = document.getElementById("res-defect");
+    el.textContent = "Loading...";
+    try {
+      const res = await fetch(`${API}/check-image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image_path: `static/images/${selectedProduct.id}.jpg` }),
+      });
+      const data = await res.json();
+      el.textContent = data.ok
+        ? "✅ Image looks good — ready to publish."
+        : `❌ Issue detected: ${data.reason}`;
+    } catch (e) { el.textContent = "Error: " + e.message; }
+  }
+
+  async function sendChat() {
+    const input = document.getElementById("chat-input");
+    const area  = document.getElementById("chat-area");
+    const msg   = input.value.trim();
+    if (!msg) return;
+    input.value = "";
+
+    area.innerHTML += `<div class="chat-msg user">You: ${msg}</div>`;
+    chatHistory.push({ role: "user", content: msg });
+
+    try {
+      const res = await fetch(`${API}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, history: chatHistory }),
+      });
+      const data = await res.json();
+      area.innerHTML += `<div class="chat-msg bot">Assistant: ${data.reply}</div>`;
+      chatHistory.push({ role: "assistant", content: data.reply });
+    } catch (e) {
+      area.innerHTML += `<div class="chat-msg bot" style="color:#f87171">Error: ${e.message}</div>`;
+    }
+    area.scrollTop = area.scrollHeight;
+  }
+
+  function bindEvents() {} // placeholder for future event delegation
+
+  // ── Boot ───────────────────────────────────────────────────────────────
+  loadProducts();
+</script>
+</body>
+</html>
