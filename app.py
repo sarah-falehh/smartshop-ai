@@ -1,5 +1,5 @@
 """
-main.py — SmartShop AI entry point
+app.py — SmartShop AI entry point
 ====================================
 The integration lead owns this file.
 Add a new blueprint here when a module is ready.
@@ -11,6 +11,9 @@ from database import get_all_products, add_product, get_product, update_product
 import uuid
 import base64
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ── Import blueprints (swap stubs for real ones as modules are completed) ──
 from alt_text.routes       import bp as alt_text_bp
@@ -69,13 +72,11 @@ def create_product():
     # Save image if provided
     image_path = None
     if data.get("image_b64"):
-        # In a real app, save the image to disk or cloud storage
-        # For now, we'll just store a placeholder path
         image_path = f"static/images/{product_id}.jpg"
-        # TODO: Decode base64 and save actual file
-        # image_data = base64.b64decode(data["image_b64"])
-        # with open(image_path, "wb") as f:
-        #     f.write(image_data)
+        os.makedirs("static/images", exist_ok=True)
+        image_data = base64.b64decode(data["image_b64"])
+        with open(image_path, "wb") as f:
+            f.write(image_data)
     
     # Create product object
     product = {
@@ -142,5 +143,5 @@ def static_files(path):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=True, use_reloader=False, port=5001)
 
