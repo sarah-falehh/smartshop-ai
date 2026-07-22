@@ -49,7 +49,7 @@
 - [Repository Structure](#repository-structure)
 - [Installation](#installation)
 - [Running the Application](#running-the-application)
-- [Project Demonstration](#project-demonstration)
+
 - [Team](#team)
 - [Project Context](#project-context)
 - [Limitations](#limitations)
@@ -1111,38 +1111,7 @@ sentiment/routes.py
 
 ## Project Demonstration
 
-### Marketing and Demonstration Video
 
-The project includes a marketing video and a functional demonstration covering the SmartShop AI workflow.
-
-Place the file at the repository root using the following name:
-
-```text
-video_deep.mp4
-```
-
-Then use the following link:
-
-<p align="center">
-
-[▶ Watch the SmartShop AI marketing and demonstration video](video_deep.mp4)
-
-</p>
-
-The video presents:
-
-- the e-commerce problem;
-- the SmartShop AI value proposition;
-- product-image processing;
-- recommendation generation;
-- categorization;
-- review analysis;
-- RAG assistance;
-- the complete user journey.
-
-> If GitHub cannot preview the complete video due to its size, download the file or publish it as an unlisted YouTube video and replace the link above.
-
----
 
 ## Team
 
