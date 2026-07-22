@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="512"
+     height="512"
+     viewBox="0 0 512 512">
+
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#7B2EFF"/>
+    </linearGradient>
+
+    <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F5FF"/>
+      <stop offset="100%" stop-color="#9D4DFF"/>
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shopping Bag -->
+  <g filter="url(#glow)">
+    <path
+      d="M120 170
+         C120 120 155 90 205 90
+         H307
+         C357 90 392 120 392 170
+         V365
+         C392 415 357 450 307 450
+         H205
+         C155 450 120 415 120 365
+         Z"
+      fill="none"
+      stroke="url(#grad)"
+      stroke-width="16"
+      stroke-linejoin="round"/>
+
+    <!-- Handles -->
+    <path
+      d="M180 170
+         C180 120 215 95 256 95
+         C297 95 332 120 332 170"
+      fill="none"
+      stroke="url(#grad)"
+      stroke-width="16"
+      stroke-linecap="round"/>
+  </g>
+
+  <!-- AI Brain -->
+  <g stroke="url(#brainGrad)"
+     stroke-width="8"
+     fill="none"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+
+    <circle cx="225" cy="215" r="14"/>
+    <circle cx="225" cy="260" r="14"/>
+    <circle cx="225" cy="305" r="14"/>
+
+    <circle cx="290" cy="215" r="14"/>
+    <circle cx="290" cy="260" r="14"/>
+    <circle cx="290" cy="305" r="14"/>
+
+    <path d="M225 215 L290 215"/>
+    <path d="M225 260 L290 260"/>
+    <path d="M225 305 L290 305"/>
+
+    <path d="M225 215 L225 260"/>
+    <path d="M225 260 L225 305"/>
+
+    <path d="M290 215 L290 260"/>
+    <path d="M290 260 L290 305"/>
+
+    <path d="M256 180 L256 340"/>
+
+    <!-- Circuit outputs -->
+    <path d="M304 215 H355"/>
+    <circle cx="375" cy="215" r="6" fill="#00E5FF"/>
+
+    <path d="M304 260 H365"/>
+    <circle cx="385" cy="260" r="6" fill="#7B2EFF"/>
+
+    <path d="M304 305 H350"/>
+    <circle cx="370" cy="305" r="6" fill="#00E5FF"/>
+
+  </g>
+
+  <!-- Spark -->
+  <g fill="#00E5FF">
+    <circle cx="165" cy="135" r="5"/>
+    <circle cx="350" cy="125" r="4"/>
+    <circle cx="390" cy="180" r="3"/>
+  </g>
+
+</svg>
